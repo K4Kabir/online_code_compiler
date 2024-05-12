@@ -21,14 +21,14 @@ function App() {
   const [status, setStatus] = useState();
   const [processing, setProcessing] = useState(false);
   const [input, setInput] = useState("");
-  const [outputDetails, setOutPutDetails] = useState("");
+  const [outputDetails, setOutPutDetails] = useState<any>("");
 
-  console.log(languageOptions.find((f) => f.value == Language));
+  console.log(languageOptions.find((f: any) => f.value == Language));
 
   const handleCompile = () => {
     setProcessing(true);
     const formData = {
-      language_id: languageOptions.find((f) => f.value == Language).id,
+      language_id: languageOptions.find((f: any) => f.value == Language).id,
       // encode source code in base64
       source_code: btoa(input),
       //stdin: btoa(customInput),
@@ -60,7 +60,7 @@ function App() {
       });
   };
 
-  const checkStatus = async (token) => {
+  const checkStatus = async (token: any) => {
     const options = {
       method: "GET",
       url: "https://judge0-ce.p.rapidapi.com/submissions" + "/" + token,
@@ -94,8 +94,8 @@ function App() {
     }
   };
 
-  const getOutput = () => {
-    let statusId = outputDetails?.status?.id;
+  const getOutput = (outputDetails: any) => {
+    let statusId: any = outputDetails?.status?.id;
 
     if (statusId === 6) {
       // compilation error
