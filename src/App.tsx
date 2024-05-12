@@ -18,7 +18,6 @@ function App() {
   const [font, setFont] = useState("15px");
   const [Language, setLanguage] = useState(languageOptions[0].value);
   const [theme, setTheme] = useState("dark");
-  const [status, setStatus] = useState();
   const [processing, setProcessing] = useState(false);
   const [input, setInput] = useState("");
   const [outputDetails, setOutPutDetails] = useState<any>("");
