@@ -22,8 +22,6 @@ function App() {
   const [input, setInput] = useState("");
   const [outputDetails, setOutPutDetails] = useState<any>("");
 
-  console.log(languageOptions.find((f: any) => f.value == Language));
-
   const handleCompile = () => {
     setProcessing(true);
     const formData = {
@@ -48,14 +46,12 @@ function App() {
     axios
       .request(options)
       .then(function (response) {
-        console.log("res.data", response.data);
         const token = response.data.token;
         checkStatus(token);
       })
       .catch((err) => {
         let error = err.response ? err.response.data : err;
         setProcessing(false);
-        console.log(error);
       });
   };
 
@@ -83,8 +79,6 @@ function App() {
       } else {
         setProcessing(false);
         setOutPutDetails(response.data);
-        alert(`Compiled Successfully!`);
-        console.log("response.data", response.data);
         return;
       }
     } catch (err) {
@@ -105,7 +99,7 @@ function App() {
       );
     } else if (statusId === 3) {
       return (
-        <pre className="px-2 py-1 font-normal text-xs text-green-500">
+        <pre className="px-2 py-1 h-[50vh] font-normal text-xs text-green-500">
           {atob(outputDetails.stdout) == "ée"
             ? "No Output"
             : atob(outputDetails.stdout) !== null
