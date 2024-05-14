@@ -51,6 +51,7 @@ function App() {
       })
       .catch((err) => {
         let error = err.response ? err.response.data : err;
+        console.log(error);
         setProcessing(false);
       });
   };
