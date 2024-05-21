@@ -39,7 +39,7 @@ function App() {
   });
 
   useEffect(() => {
-    const newSocket = io("http://localhost:8000");
+    const newSocket = io("https://code-compiler-backend-mu.vercel.app/");
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
