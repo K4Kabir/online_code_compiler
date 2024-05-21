@@ -38,6 +38,7 @@ function App() {
     y: 0,
   });
 
+  console.log(typingPosition);
   useEffect(() => {
     const newSocket = io("https://code-compiler-backend-mu.vercel.app/");
     setSocket(newSocket);
