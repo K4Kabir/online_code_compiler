@@ -42,7 +42,7 @@ function App() {
   useEffect(() => {
     const newSocket = io("https://code-compiler-backend-mu.vercel.app/", {
       transports: ["websocket"],
-      upgrade: false,
+      withCredentials: true,
     });
     setSocket(newSocket);
 
