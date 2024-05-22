@@ -40,7 +40,9 @@ function App() {
 
   console.log(typingPosition);
   useEffect(() => {
-    const newSocket = io("https://code-compiler-backend-mu.vercel.app/", {});
+    const newSocket = io("https://code-compiler-backend-wno4.onrender.com", {
+      transports: ["websocket", "polling"],
+    });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
