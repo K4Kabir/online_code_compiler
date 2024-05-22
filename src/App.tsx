@@ -59,13 +59,16 @@ function App() {
     });
 
     newSocket.on("Code_changing", (data) => {
-      console.log(data);
       setInput(data.code);
     });
 
     newSocket.on("cursor_changing", (data) => {
-      console.log(data);
       setCursorPointer(data);
+    });
+
+    newSocket.on("change_configuration", (data) => {
+      setLanguage(data.Language);
+      setTheme(data.theme);
     });
 
     newSocket.on("disconnect", () => {
@@ -215,7 +218,17 @@ function App() {
       <div className="flex">
         <div className="w-[70%]">
           <div className="flex gap-6 p-4 border-b-4">
-            <Select value={Language} onValueChange={(l) => setLanguage(l)}>
+            <Select
+              value={Language}
+              onValueChange={(l) => {
+                setLanguage(l);
+                socket.emit("configuration_change", {
+                  Language: l,
+                  theme: theme,
+                  room: roomValue,
+                });
+              }}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a Language" />
               </SelectTrigger>
@@ -232,7 +245,17 @@ function App() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <Select value={theme} onValueChange={(v) => setTheme(v)}>
+            <Select
+              value={theme}
+              onValueChange={(v) => {
+                setTheme(v);
+                socket.emit("configuration_change", {
+                  Language: theme,
+                  theme: v,
+                  room: roomValue,
+                });
+              }}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a Theme" />
                 <SelectContent>

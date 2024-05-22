@@ -19,6 +19,20 @@ export default function Alert({
   handleSubmit,
 }) {
   const [input, setInput] = useState<any>();
+
+  function makeid(length: any) {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+  }
+
   return (
     <AlertDialog open={open}>
       <AlertDialogContent>
@@ -34,7 +48,7 @@ export default function Alert({
             Cancel
           </AlertDialogCancel>
           {!input ? (
-            <AlertDialogAction onClick={() => handleSubmit(Date.now())}>
+            <AlertDialogAction onClick={() => handleSubmit(makeid(10))}>
               Create A Random Room
             </AlertDialogAction>
           ) : (
