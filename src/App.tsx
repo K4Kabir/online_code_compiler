@@ -298,6 +298,9 @@ function App() {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            <Button disabled={processing} onClick={() => handleCompile()}>
+              {processing ? "Please Wait..." : "Run"}
+            </Button>
             {!isCollaborating && (
               <Button onClick={() => setAlert(true)}>Collaborate</Button>
             )}
@@ -311,9 +314,6 @@ function App() {
                   }}
                 >
                   Copy
-                </Button>
-                <Button disabled={processing} onClick={() => handleCompile()}>
-                  {processing ? "Please Wait..." : "Run"}
                 </Button>
                 <div className="flex justify-center items-center gap-5 relative">
                   {online.map((el, index) => {
