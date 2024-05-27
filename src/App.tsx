@@ -18,6 +18,7 @@ import { Input } from "./components/ui/input";
 import OnlineMembers from "./assets/common/OnlineMembers";
 import { toast } from "sonner";
 import io from "socket.io-client";
+import moment from "moment";
 
 function App() {
   const inputRef = useRef<HTMLInputElement>();
@@ -25,20 +26,20 @@ function App() {
   const [Language, setLanguage] = useState(languageOptions[0].value);
   const [theme, setTheme] = useState("dark");
   const [processing, setProcessing] = useState(false);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(
+    localStorage.getItem("code") ? localStorage.getItem("code") : ""
+  );
   const [outputDetails, setOutPutDetails] = useState<any>("");
   const [alert, setAlert] = useState<Boolean>(false);
   const [isCollaborating, setIsCollaborating] = useState<Boolean>(false);
   const [roomValue, setRoomValue] = useState<any>();
   const [socket, setSocket] = useState<any>();
   const [online, setOnline] = useState<String[]>([]);
-  const [typingPosition, setTypingPosition] = useState<Number>();
   const [cursorPointer, setCursorPointer] = useState<any>({
     x: 0,
     y: 0,
   });
-
-  console.log(typingPosition);
+  const [codeRanByOther, setCodeRanByOther] = useState<any>([]);
   useEffect(() => {
     const newSocket = io("https://code-compiler-backend-wno4.onrender.com", {
       transports: ["websocket", "polling"],
@@ -71,8 +72,16 @@ function App() {
       setTheme(data.theme);
     });
 
+    newSocket.on("code_ran_by_other", (data) => {
+      setCodeRanByOther(() => [data]);
+    });
+
     newSocket.on("disconnect", () => {
       console.log(`User disconnected`);
+    });
+
+    window.addEventListener("beforeunload", function (e) {
+      e.preventDefault();
     });
 
     return () => {
@@ -142,6 +151,13 @@ function App() {
       } else {
         setProcessing(false);
         setOutPutDetails(response.data);
+        if (isCollaborating) {
+          socket.emit("code_ran", {
+            data: response.data,
+            room: roomValue,
+            date: Date.now(),
+          });
+        }
         return;
       }
     } catch (err) {
@@ -250,7 +266,7 @@ function App() {
               onValueChange={(v) => {
                 setTheme(v);
                 socket.emit("configuration_change", {
-                  Language: theme,
+                  Language: Language,
                   theme: v,
                   room: roomValue,
                 });
@@ -296,6 +312,15 @@ function App() {
                 >
                   Copy
                 </Button>
+                <Button disabled={processing} onClick={() => handleCompile()}>
+                  {processing ? "Please Wait..." : "Run"}
+                </Button>
+                <div className="flex justify-center items-center gap-5 relative">
+                  {online.map((el, index) => {
+                    return <OnlineMembers key={index} name={el} />;
+                  })}
+                  <div className="w-3 h-3 bg bg-green-400 absolute rounded-full top-0 right-0 border border-0.5"></div>
+                </div>
               </>
             )}
           </div>
@@ -311,8 +336,8 @@ function App() {
             }
           >
             <Editor
-              handleInput={(data: any, typingPosi: Number) => {
-                setTypingPosition(typingPosi);
+              handleInput={(data: any) => {
+                localStorage.setItem("code", data);
                 setInput(data);
                 socket?.emit("code_change", { input: data, room: roomValue });
               }}
@@ -324,27 +349,24 @@ function App() {
           </div>
         </div>
         <div className="border b-l-3 w-[30%]">
-          <p className="font-bold text-center p-2">Code Execution</p>
-          <div className="bg overflow-auto bg-black h-[30%] text-white p-2">
+          <div className="bg overflow-auto bg-black h-[100vh] text-white p-2">
             {outputDetails ? <>{getOutput(outputDetails)}</> : null}
-          </div>
-          <div className="flex justify-center items-center p-3">
-            <Button disabled={processing} onClick={() => handleCompile()}>
-              {processing ? "Please Wait..." : "Run"}
-            </Button>
-          </div>
-          {isCollaborating && (
-            <>
-              <div className="text-center mt-5 font-bold">
-                You are Collborating with..
-              </div>
-              <div className="flex justify-center items-center gap-5">
-                {online.map((el, index) => {
-                  return <OnlineMembers key={index} name={el} />;
+            {isCollaborating && (
+              <div>
+                {codeRanByOther.map((el: any, index: any) => {
+                  return (
+                    <div key={index}>
+                      <p>
+                        Ran By: {el.id} {moment(el.date).fromNow()}
+                      </p>
+                      {getOutput(el.data)}
+                    </div>
+                  );
                 })}
               </div>
-            </>
-          )}
+            )}
+          </div>
+          <div className="flex flex-col justify-center items-center p-3"></div>
         </div>
       </div>
     </>
